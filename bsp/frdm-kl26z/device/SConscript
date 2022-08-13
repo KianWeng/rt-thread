@@ -1,0 +1,27 @@
+import rtconfig
+Import('RTT_ROOT')
+from building import *
+
+# get current directory
+cwd = GetCurrentDir()
+
+path = [cwd, cwd + '/MKL26Z4']
+src = Glob('MKL26Z4/*.c')
+
+src += ['system_MKL26Z4.c']
+
+#add for startup script 
+if rtconfig.CROSS_TOOL == 'gcc':
+     src = src + ['TOOLCHAIN_GCC_ARM/startup_MKL26Z4.S']
+     src = src + ['TOOLCHAIN_GCC_ARM/startup.c']
+     path += [cwd + 'TOOLCHAIN_GCC_ARM']
+elif rtconfig.CROSS_TOOL == 'keil':
+     src = src + ['TOOLCHAIN_ARM_STD/startup_MKL26Z4.s']
+# elif rtconfig.CROSS_TOOL == 'iar':
+
+CPPDEFINES = ['CPU_MKL26Z256VLH4']
+
+group = DefineGroup('Drivers', src, depend = [''], CPPPATH = path, CPPDEFINES=CPPDEFINES)
+#CPPDEFINES = CPPDEFINES)
+
+Return('group')
